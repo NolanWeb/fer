@@ -1,0 +1,21 @@
+{
+    "schemaVersion": 2,
+    "dockerfileLines": [
+    "FROM node:18 AS build",
+    "WORKDIR /usr/src/app",
+    "ARG VITE_API_URL",
+    "ENV VITE_API_URL=$VITE_API_URL",
+    "COPY package*.json ./",
+    "RUN npm install",
+    "COPY . .",
+    "RUN echo \"VITE_API_URL AT BUILD = $VITE_API_URL\"",
+    "RUN npm run build",
+
+    "FROM node:16",
+    "WORKDIR /usr/src/app",
+    "COPY --from=build /usr/src/app/dist ./dist",
+    "RUN npm install -g serve",
+    "EXPOSE 5000",
+    "CMD [\"serve\", \"-s\", \"dist\", \"-l\", \"5000\"]"
+  ] 
+}
